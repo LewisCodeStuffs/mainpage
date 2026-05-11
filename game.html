@@ -1,0 +1,1441 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astra Forge</title>
+  <style>
+    :root {
+      --bg0: #08111f;
+      --bg1: #0d1728;
+      --bg2: #121c31;
+      --panel: rgba(16, 25, 44, 0.72);
+      --panel-2: rgba(20, 31, 52, 0.88);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #ecf3ff;
+      --muted: #a9b7d0;
+      --muted-2: #7d8ca8;
+      --accent: #8dd7ff;
+      --accent-2: #7c9bff;
+      --good: #75e8a0;
+      --warn: #ffd56b;
+      --bad: #ff7f9f;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius: 24px;
+      --radius-sm: 16px;
+    }* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(92, 145, 255, 0.18), transparent 22%),
+    radial-gradient(circle at 85% 0%, rgba(95, 226, 255, 0.12), transparent 18%),
+    linear-gradient(180deg, var(--bg0), var(--bg1) 40%, var(--bg2));
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -40px;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.6), transparent 85%);
+  opacity: .35;
+  z-index: 0;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  width: min(1180px, calc(100% - 24px));
+  margin: 0 auto;
+  padding: 20px 0 28px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: rgba(12, 20, 34, 0.6);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow);
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.brand h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: -0.04em;
+}
+.brand p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.pill-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.pill {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: .92rem;
+  cursor: pointer;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease, opacity .18s ease;
+  user-select: none;
+}
+.pill:hover { transform: translateY(-1px); background: rgba(255,255,255,0.08); }
+.pill:active { transform: translateY(0) scale(.98); }
+.pill.secondary { color: var(--muted); font-weight: 600; }
+.pill.active {
+  background: linear-gradient(180deg, rgba(141, 215, 255, 0.18), rgba(124, 155, 255, 0.14));
+  border-color: rgba(141, 215, 255, 0.28);
+  color: var(--text);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.45fr .95fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(19, 30, 49, 0.8), rgba(13, 21, 38, 0.9));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+  position: relative;
+}
+
+.card-header {
+  padding: 18px 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.03em;
+}
+.card-header .sub {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.45;
+}
+
+.panel {
+  padding: 18px;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tab-btn {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+  border-radius: 14px;
+  padding: 10px 8px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: .92rem;
+  transition: .18s ease;
+}
+.tab-btn.active, .tab-btn:hover {
+  background: rgba(141, 215, 255, 0.14);
+  color: var(--text);
+  border-color: rgba(141, 215, 255, 0.22);
+}
+
+.hero {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px;
+  min-height: 86px;
+}
+.stat .k { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .12em; }
+.stat .v { margin-top: 8px; font-size: 1.22rem; font-weight: 800; letter-spacing: -.03em; }
+.stat .s { margin-top: 6px; color: var(--muted-2); font-size: .84rem; }
+
+.core-wrap {
+  display: grid;
+  gap: 14px;
+}
+
+.orb {
+  display: grid;
+  place-items: center;
+  height: 270px;
+  border-radius: 28px;
+  border: 1px solid rgba(141, 215, 255, 0.18);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(141, 215, 255, 0.28), transparent 18%),
+    radial-gradient(circle at 50% 55%, rgba(124, 155, 255, 0.18), transparent 24%),
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  transition: transform .12s ease, border-color .2s ease, background .2s ease;
+}
+
+.orb:hover { border-color: rgba(141, 215, 255, 0.35); }
+.orb:active { transform: scale(.992); }
+
+.orb .core {
+  width: min(320px, 68vw);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.12) 18%, transparent 22%),
+    radial-gradient(circle at 50% 45%, rgba(141, 215, 255, 0.95), rgba(124, 155, 255, 0.66) 38%, rgba(30, 43, 79, 0.16) 63%, rgba(0, 0, 0, 0.18) 100%);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08) inset,
+    0 22px 80px rgba(77, 118, 255, 0.28),
+    0 0 60px rgba(141, 215, 255, 0.14);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.core::before, .core::after {
+  content: "";
+  position: absolute;
+  inset: 10%;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.08);
+  animation: spin 28s linear infinite;
+}
+.core::after {
+  inset: 18%;
+  animation-duration: 38s;
+  animation-direction: reverse;
+}
+
+.core-label {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 18px;
+}
+.core-label .big {
+  font-size: clamp(1.8rem, 5vw, 3.1rem);
+  font-weight: 900;
+  letter-spacing: -.06em;
+  margin: 0;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.25);
+}
+.core-label .small {
+  margin-top: 8px;
+  color: rgba(236,243,255,.8);
+  font-size: .96rem;
+  line-height: 1.5;
+  max-width: 28ch;
+}
+.core-label .hint {
+  margin-top: 10px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.08);
+  color: var(--muted);
+  font-size: .82rem;
+}
+
+.section {
+  display: none;
+  animation: fadeIn .18s ease;
+}
+.section.active { display: block; }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.action {
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  border-radius: 16px;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: .18s ease;
+}
+.action:hover { background: rgba(255,255,255,0.08); transform: translateY(-1px); }
+.action:active { transform: translateY(0) scale(.99); }
+.action.primary {
+  background: linear-gradient(180deg, rgba(141, 215, 255, 0.22), rgba(124, 155, 255, 0.18));
+  border-color: rgba(141, 215, 255, 0.26);
+}
+.action.good { background: rgba(117, 232, 160, 0.11); border-color: rgba(117, 232, 160, 0.18); }
+.action.warn { background: rgba(255, 213, 107, 0.11); border-color: rgba(255, 213, 107, 0.18); }
+.action.bad  { background: rgba(255, 127, 159, 0.11); border-color: rgba(255, 127, 159, 0.18); }
+.action:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+
+.list {
+  display: grid;
+  gap: 10px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.04);
+}
+.item .title { font-weight: 800; }
+.item .desc { color: var(--muted); margin-top: 4px; font-size: .92rem; line-height: 1.45; }
+.item .meta { margin-top: 8px; color: var(--muted-2); font-size: .85rem; }
+.item .right { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+
+.micro {
+  color: var(--muted-2);
+  font-size: .84rem;
+  line-height: 1.5;
+}
+
+.bar {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius: inherit;
+  transition: width .22s ease;
+}
+
+.log {
+  max-height: 345px;
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+  padding-right: 4px;
+}
+.log-entry {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.5;
+}
+.log-entry strong { color: var(--text); }
+
+.footer {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(12, 20, 34, 0.56);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--muted);
+}
+
+.save-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+input[type="file"] { display: none; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  background: rgba(9, 16, 28, 0.92);
+  color: var(--text);
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  transition: .25s ease;
+  z-index: 20;
+  max-width: min(94vw, 560px);
+  text-align: center;
+  font-size: .92rem;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.spark {
+  position: absolute;
+  inset: auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: white;
+  box-shadow: 0 0 12px rgba(255,255,255,0.7);
+  animation: spark .7s ease-out forwards;
+}
+
+@keyframes spark {
+  from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity: 0; }
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+  .app { width: min(100% - 14px, 1180px); padding-top: 10px; }
+  .topbar { flex-direction: column; align-items: stretch; }
+  .pill-row { justify-content: flex-start; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .card-header { flex-direction: column; }
+  .item { grid-template-columns: 1fr; }
+  .item .right { align-items: stretch; }
+  .footer { grid-template-columns: 1fr; }
+  .save-row { justify-content: stretch; }
+  .save-row .pill { width: 100%; }
+  .tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .orb { height: 240px; }
+}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <h1>Astra Forge</h1>
+        <p>Build energy, unlock systems, and ascend forever.</p>
+      </div>
+      <div class="pill-row">
+        <button class="pill active" id="tabCore">Core</button>
+        <button class="pill secondary" id="tabForge">Forge</button>
+        <button class="pill secondary" id="tabTech">Tech</button>
+        <button class="pill secondary" id="tabQuests">Quests</button>
+        <button class="pill secondary" id="tabLog">Log</button>
+      </div>
+    </div><div class="layout">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2 id="sectionTitle">Core Reactor</h2>
+        <div class="sub" id="sectionSub">Tap the core to generate power. Every action feeds your growth loop.</div>
+      </div>
+      <div class="pill-row">
+        <button class="pill" id="themeBtn">Dark</button>
+        <button class="pill" id="musicBtn">Sound: On</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="stats-grid">
+        <div class="stat"><div class="k">Energy</div><div class="v" id="energyTxt">0</div><div class="s" id="energyPerSecTxt">+0 / sec</div></div>
+        <div class="stat"><div class="k">Flux</div><div class="v" id="fluxTxt">0</div><div class="s">Used to buy upgrades</div></div>
+        <div class="stat"><div class="k">Level</div><div class="v" id="levelTxt">1</div><div class="s" id="xpTxt">0 / 20 XP</div></div>
+        <div class="stat"><div class="k">Cores</div><div class="v" id="coresTxt">0</div><div class="s" id="prestigeTxt">Prestige currency</div></div>
+      </div>
+
+      <div class="tabs" aria-label="Game sections">
+        <button class="tab-btn active" data-tab="core">Core</button>
+        <button class="tab-btn" data-tab="forge">Forge</button>
+        <button class="tab-btn" data-tab="tech">Tech</button>
+        <button class="tab-btn" data-tab="quests">Quests</button>
+        <button class="tab-btn" data-tab="log">Log</button>
+      </div>
+
+      <div style="height: 14px"></div>
+
+      <div class="section active" id="coreSection">
+        <div class="core-wrap">
+          <div class="orb" id="coreOrb" title="Tap to generate energy">
+            <div class="core">
+              <div class="core-label">
+                <p class="big" id="coreBig">Tap the Core</p>
+                <div class="small" id="coreSmall">Generate energy, trigger spark bursts, and feed your growing machine.</div>
+                <div class="hint">Tap speed matters • combo bonuses unlock soon</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="action primary" id="boostBtn">Overcharge</button>
+            <button class="action good" id="claimQuestBtn">Claim Quest Reward</button>
+            <button class="action warn" id="prestigeBtn">Prestige Reset</button>
+          </div>
+
+          <div class="micro" id="coreMicro">Overcharge boosts energy for 15 seconds. Prestige resets progress for permanent power.</div>
+        </div>
+      </div>
+
+      <div class="section" id="forgeSection">
+        <div class="list" id="forgeList"></div>
+      </div>
+
+      <div class="section" id="techSection">
+        <div class="list" id="techList"></div>
+      </div>
+
+      <div class="section" id="questsSection">
+        <div class="list" id="questList"></div>
+      </div>
+
+      <div class="section" id="logSection">
+        <div class="log" id="logList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>System</h2>
+        <div class="sub">Progress, multipliers, automation, prestige, and saves.</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="list">
+        <div class="item">
+          <div>
+            <div class="title">Progress</div>
+            <div class="desc">Level up by gaining XP from active play and automation.</div>
+            <div class="meta" id="progressMeta">Level 1 • 0 / 20 XP</div>
+          </div>
+          <div class="right"><div class="micro">Next bonus</div><div class="title" id="nextBonusTxt">x1.00</div></div>
+        </div>
+
+        <div class="item">
+          <div>
+            <div class="title">Automation</div>
+            <div class="desc">Workers, drones, and labs generate passive energy.</div>
+            <div class="meta" id="autoMeta">0.0 energy/sec</div>
+          </div>
+          <div class="right"><div class="micro">Total units</div><div class="title" id="unitsTxt">0</div></div>
+        </div>
+
+        <div class="item">
+          <div>
+            <div class="title">Prestige</div>
+            <div class="desc">Reset for Cores. Cores multiply everything permanently.</div>
+            <div class="meta" id="prestigeMeta">Need 1000 energy for 1 Core</div>
+          </div>
+          <div class="right"><button class="action warn" id="prestigeQuickBtn">Reset for Core</button></div>
+        </div>
+
+        <div class="item">
+          <div>
+            <div class="title">Save System</div>
+            <div class="desc">Auto-saves every few seconds and can export/import your run.</div>
+            <div class="meta">Local save with offline progress</div>
+          </div>
+          <div class="right">
+            <div class="btn-row">
+              <button class="action" id="exportBtn">Export</button>
+              <label class="pill" for="importFile" style="display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">Import</label>
+              <input id="importFile" type="file" accept="application/json" />
+            </div>
+          </div>
+        </div>
+
+        <div class="item">
+          <div>
+            <div class="title">Reset / Debug</div>
+            <div class="desc">Clear save or trigger a tiny debug burst to test the loop.</div>
+            <div class="meta">Useful while building the game</div>
+          </div>
+          <div class="right">
+            <div class="btn-row">
+              <button class="action bad" id="wipeBtn">Wipe Save</button>
+              <button class="action" id="debugBtn">Debug +250</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div>
+    <div style="font-weight: 800; color: var(--text);">Game Loop</div>
+    <div id="footerTxt">Tap • Upgrade • Automate • Prestige • Repeat</div>
+  </div>
+  <div class="save-row">
+    <button class="pill" id="saveNowBtn">Save Now</button>
+    <button class="pill" id="loadOfflineBtn">Show Offline Gain</button>
+  </div>
+</div>
+
+  </div>  <div class="toast" id="toast"></div>  <script>
+    const SAVE_KEY = "astra_forge_save_v1";
+    const THEME_KEY = "astra_forge_theme_v1";
+    const SOUND_KEY = "astra_forge_sound_v1";
+
+    const ui = {
+      energyTxt: document.getElementById("energyTxt"),
+      energyPerSecTxt: document.getElementById("energyPerSecTxt"),
+      fluxTxt: document.getElementById("fluxTxt"),
+      levelTxt: document.getElementById("levelTxt"),
+      xpTxt: document.getElementById("xpTxt"),
+      coresTxt: document.getElementById("coresTxt"),
+      prestigeTxt: document.getElementById("prestigeTxt"),
+      progressMeta: document.getElementById("progressMeta"),
+      nextBonusTxt: document.getElementById("nextBonusTxt"),
+      autoMeta: document.getElementById("autoMeta"),
+      unitsTxt: document.getElementById("unitsTxt"),
+      prestigeMeta: document.getElementById("prestigeMeta"),
+      coreOrb: document.getElementById("coreOrb"),
+      coreBig: document.getElementById("coreBig"),
+      coreSmall: document.getElementById("coreSmall"),
+      coreMicro: document.getElementById("coreMicro"),
+      forgeList: document.getElementById("forgeList"),
+      techList: document.getElementById("techList"),
+      questList: document.getElementById("questList"),
+      logList: document.getElementById("logList"),
+      sectionTitle: document.getElementById("sectionTitle"),
+      sectionSub: document.getElementById("sectionSub"),
+      toast: document.getElementById("toast"),
+      themeBtn: document.getElementById("themeBtn"),
+      musicBtn: document.getElementById("musicBtn"),
+      boostBtn: document.getElementById("boostBtn"),
+      claimQuestBtn: document.getElementById("claimQuestBtn"),
+      prestigeBtn: document.getElementById("prestigeBtn"),
+      prestigeQuickBtn: document.getElementById("prestigeQuickBtn"),
+      exportBtn: document.getElementById("exportBtn"),
+      importFile: document.getElementById("importFile"),
+      wipeBtn: document.getElementById("wipeBtn"),
+      debugBtn: document.getElementById("debugBtn"),
+      saveNowBtn: document.getElementById("saveNowBtn"),
+      loadOfflineBtn: document.getElementById("loadOfflineBtn"),
+      footerTxt: document.getElementById("footerTxt")
+    };
+
+    const tabs = [...document.querySelectorAll(".tab-btn")];
+    const sections = {
+      core: document.getElementById("coreSection"),
+      forge: document.getElementById("forgeSection"),
+      tech: document.getElementById("techSection"),
+      quests: document.getElementById("questsSection"),
+      log: document.getElementById("logSection")
+    };
+
+    let audioCtx = null;
+    let theme = localStorage.getItem(THEME_KEY) || "dark";
+    let soundEnabled = localStorage.getItem(SOUND_KEY);
+    soundEnabled = soundEnabled === null ? true : soundEnabled === "true";
+
+    const defaultState = {
+      energy: 0,
+      flux: 0,
+      level: 1,
+      xp: 0,
+      cores: 0,
+      totalTap: 1,
+      tapMult: 1,
+      globalMult: 1,
+      autoPerSec: 0,
+      overchargeUntil: 0,
+      lastSave: Date.now(),
+      lastTick: Date.now(),
+      lastQuestRefresh: Date.now(),
+      currentQuestId: null,
+      log: [],
+      unlockedTech: {},
+      forge: [
+        { id: "miner", name: "Miner", desc: "Generates passive energy.", baseCost: 15, count: 0, gain: 0.5, costMult: 1.18 },
+        { id: "drone", name: "Drone", desc: "Boosts passive output and tap power.", baseCost: 75, count: 0, gain: 2, costMult: 1.22 },
+        { id: "lab", name: "Lab", desc: "Converts knowledge into flux.", baseCost: 250, count: 0, gain: 6, costMult: 1.26 },
+        { id: "reactor", name: "Reactor", desc: "Massive passive production, expensive but strong.", baseCost: 1200, count: 0, gain: 20, costMult: 1.3 }
+      ],
+      tech: [
+        { id: "tap", name: "Tap Precision", desc: "+1 tap power per level.", baseCost: 20, unlocked: false, costMult: 1.9 },
+        { id: "crit", name: "Critical Burst", desc: "20% chance to double tap rewards.", baseCost: 80, unlocked: false, costMult: 2.1 },
+        { id: "auto", name: "Automation Protocol", desc: "+25% passive energy.", baseCost: 180, unlocked: false, costMult: 2.4 },
+        { id: "flux", name: "Flux Siphon", desc: "Convert every 100 energy into 4 flux.", baseCost: 600, unlocked: false, costMult: 2.8 },
+        { id: "prestige", name: "Core Resonance", desc: "Cores grant +15% global power each.", baseCost: 0, unlocked: false, costMult: 1 }
+      ],
+      quests: []
+    };
+
+    let state = loadGame() || structuredClone(defaultState);
+    hydrateQuestPool();
+    normalizeState();
+    applyTheme();
+    applySoundState();
+    generateQuestIfNeeded(true);
+    rebuildLists();
+    addLog("System booted. The core is awake.");
+    const offline = applyOfflineProgress();
+    if (offline > 0) addLog(`Offline progress recovered: +${fmt(offline)} energy.`);
+    showToast("Astra Forge loaded.");
+    renderAll();
+
+    tabs.forEach(btn => btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      setTab(tab);
+    }));
+
+    document.getElementById("tabCore").addEventListener("click", () => setTab("core"));
+    document.getElementById("tabForge").addEventListener("click", () => setTab("forge"));
+    document.getElementById("tabTech").addEventListener("click", () => setTab("tech"));
+    document.getElementById("tabQuests").addEventListener("click", () => setTab("quests"));
+    document.getElementById("tabLog").addEventListener("click", () => setTab("log"));
+
+    ui.themeBtn.addEventListener("click", () => {
+      theme = theme === "dark" ? "light" : "dark";
+      localStorage.setItem(THEME_KEY, theme);
+      applyTheme();
+      showToast(`Theme switched to ${theme}.`);
+    });
+
+    ui.musicBtn.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      localStorage.setItem(SOUND_KEY, String(soundEnabled));
+      applySoundState();
+      if (soundEnabled) playTone(440, 0.05, "sine");
+      showToast(`Sound ${soundEnabled ? "enabled" : "disabled"}.`);
+    });
+
+    ui.coreOrb.addEventListener("click", (e) => {
+      const gain = tapCore(e);
+      burstSpark(e);
+      if (gain > 0) playTone(220 + Math.min(220, gain * 12), 0.03, "triangle");
+    });
+
+    ui.boostBtn.addEventListener("click", () => {
+      if (state.energy < 120) return showToast("Need 120 energy for overcharge.");
+      state.energy -= 120;
+      state.overchargeUntil = Date.now() + 15000;
+      state.globalMult *= 1.15;
+      addLog("Overcharge engaged. Energy output surged for 15 seconds.");
+      showToast("Overcharge activated.");
+      playTone(520, 0.08, "sawtooth");
+      renderAll();
+    });
+
+    ui.claimQuestBtn.addEventListener("click", claimQuestReward);
+    ui.prestigeBtn.addEventListener("click", prestigeReset);
+    ui.prestigeQuickBtn.addEventListener("click", prestigeReset);
+    ui.exportBtn.addEventListener("click", exportSave);
+    ui.importFile.addEventListener("change", importSave);
+    ui.wipeBtn.addEventListener("click", wipeSave);
+    ui.debugBtn.addEventListener("click", () => {
+      state.energy += 250;
+      state.flux += 20;
+      state.xp += 10;
+      addLog("Debug burst granted +250 energy and +20 flux.");
+      showToast("Debug reward applied.");
+      renderAll();
+    });
+    ui.saveNowBtn.addEventListener("click", () => { saveGame(true); showToast("Saved."); });
+    ui.loadOfflineBtn.addEventListener("click", () => {
+      const elapsed = Math.max(0, (Date.now() - state.lastSave) / 1000);
+      const offlineGain = computeOfflineGain(elapsed);
+      showToast(`Estimated offline gain: +${fmt(offlineGain)} energy.`);
+    });
+
+    window.addEventListener("beforeunload", () => saveGame(false));
+
+    setInterval(gameTick, 100);
+    setInterval(autoQuestTicker, 1000);
+    setInterval(() => saveGame(false), 5000);
+    setInterval(() => maybeRandomEvent(), 18000);
+
+    function setTab(tab) {
+      tabs.forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+      Object.entries(sections).forEach(([k, el]) => el.classList.toggle("active", k === tab));
+
+      const map = {
+        core: ["Core Reactor", "Tap the core to generate power. Every action feeds your growth loop."],
+        forge: ["Forge Units", "Buy passive generators that keep your run alive while you do other things."],
+        tech: ["Tech Tree", "Permanent upgrades that change the way your run behaves."],
+        quests: ["Quest Board", "Timed objectives with rewards and streak-friendly loops."],
+        log: ["Run Log", "Recent events, rewards, and notable system changes."]
+      };
+      ui.sectionTitle.textContent = map[tab][0];
+      ui.sectionSub.textContent = map[tab][1];
+    }
+
+    function normalizeState() {
+      state = { ...structuredClone(defaultState), ...state };
+      state.forge = defaultState.forge.map(def => {
+        const saved = (state.forge || []).find(x => x.id === def.id);
+        return saved ? { ...def, ...saved } : structuredClone(def);
+      });
+      state.tech = defaultState.tech.map(def => {
+        const saved = (state.tech || []).find(x => x.id === def.id);
+        return saved ? { ...def, ...saved } : structuredClone(def);
+      });
+      state.log = Array.isArray(state.log) ? state.log.slice(-60) : [];
+      if (!Array.isArray(state.quests)) state.quests = [];
+      if (!state.currentQuestId && state.quests.length) state.currentQuestId = state.quests[0].id;
+      if (!Number.isFinite(state.overchargeUntil)) state.overchargeUntil = 0;
+      if (!Number.isFinite(state.lastSave)) state.lastSave = Date.now();
+      if (!Number.isFinite(state.lastTick)) state.lastTick = Date.now();
+      if (!Number.isFinite(state.lastQuestRefresh)) state.lastQuestRefresh = Date.now();
+      recomputeDerived();
+    }
+
+    function recomputeDerived() {
+      let forgeEnergy = 0;
+      let forgeTapBonus = 0;
+      state.forge.forEach(f => {
+        forgeEnergy += f.count * f.gain;
+        if (f.id === "drone") forgeTapBonus += f.count * 0.4;
+      });
+
+      let techTapBonus = 0;
+      let techMult = 1;
+      let autoMult = 1;
+      let fluxMod = 0;
+      state.tech.forEach(t => {
+        if (!t.unlocked) return;
+        if (t.id === "tap") techTapBonus += state.level;
+        if (t.id === "crit") techMult *= 1.12;
+        if (t.id === "auto") autoMult *= 1.25;
+        if (t.id === "flux") fluxMod += 4;
+      });
+
+      const prestigeMult = 1 + state.cores * 0.15;
+      const levelMult = 1 + (state.level - 1) * 0.05;
+      const overchargeMult = state.overchargeUntil > Date.now() ? 1.35 : 1;
+      const energyBoost = state.energy >= 1000 ? 1.1 : 1;
+
+      state.tapMult = (1 + forgeTapBonus + techTapBonus) * techMult * prestigeMult * levelMult * energyBoost;
+      state.autoPerSec = forgeEnergy * autoMult * prestigeMult * levelMult;
+      state.globalMult = prestigeMult * levelMult * overchargeMult;
+
+      if (state.tech.find(t => t.id === "flux")?.unlocked) {
+        const siphon = Math.floor(state.energy / 100) * 4;
+        state.flux = Math.max(state.flux, state.flux + 0);
+        state._pendingSiphon = siphon;
+      } else {
+        state._pendingSiphon = 0;
+      }
+    }
+
+    function applyTheme() {
+      document.body.dataset.theme = theme;
+      if (theme === "dark") {
+        document.documentElement.style.setProperty("--bg0", "#08111f");
+        ui.themeBtn.textContent = "Dark";
+      } else {
+        document.documentElement.style.setProperty("--bg0", "#e8eefb");
+        ui.themeBtn.textContent = "Light";
+      }
+    }
+
+    function applySoundState() {
+      ui.musicBtn.textContent = `Sound: ${soundEnabled ? "On" : "Off"}`;
+    }
+
+    function tapCore(event) {
+      const crit = state.tech.find(t => t.id === "crit")?.unlocked && Math.random() < 0.2;
+      const base = state.totalTap * state.tapMult * state.globalMult;
+      const overcharge = state.overchargeUntil > Date.now() ? 1.5 : 1;
+      const gain = Math.max(1, Math.floor(base * (crit ? 2 : 1) * overcharge));
+
+      state.energy += gain;
+      state.xp += 3 + Math.floor(gain * 0.05);
+      state.flux += gain >= 50 ? 2 : 0;
+      if (crit) addLog(`Critical burst! Tap yielded ${fmt(gain)} energy.`);
+      if (state.energy > 0 && state.energy % 100 < gain) state.flux += 1;
+      addProgression();
+      maybeUnlockFlux();
+      if (state.energy >= 100 && Math.random() < 0.25) maybeRollQuestProgress();
+      addTapCombo();
+      renderAll();
+      return gain;
+    }
+
+    let comboCount = 0;
+    let comboTimer = null;
+    function addTapCombo() {
+      comboCount += 1;
+      clearTimeout(comboTimer);
+      comboTimer = setTimeout(() => comboCount = 0, 1200);
+      if (comboCount >= 10) {
+        const bonus = Math.floor(comboCount * 2);
+        state.energy += bonus;
+        state.flux += Math.floor(comboCount / 5);
+        addLog(`Combo chain x${comboCount}! Bonus +${fmt(bonus)} energy.`);
+        showToast(`Combo x${comboCount}`);
+        comboCount = 0;
+      }
+    }
+
+    function addProgression() {
+      const needed = state.level * 20;
+      if (state.xp >= needed) {
+        state.xp -= needed;
+        state.level += 1;
+        state.flux += Math.max(1, Math.floor(state.level / 4));
+        state.totalTap += 1;
+        state.energy += 10 * state.level;
+        addLog(`Level up! Reached level ${state.level}.`);
+        showToast(`Level ${state.level}`);
+      }
+    }
+
+    function gameTick() {
+      normalizeState();
+      const now = Date.now();
+      const dt = Math.min(0.25, Math.max(0.05, (now - state.lastTick) / 1000));
+      state.lastTick = now;
+
+      const passive = state.autoPerSec * dt * state.globalMult;
+      state.energy += passive;
+
+      if (state.tech.find(t => t.id === "flux")?.unlocked) {
+        const siphon = Math.floor(state.energy / 100) * 4;
+        if (siphon > 0) {
+          const tickSiphon = Math.floor((passive > 0 ? passive : 0) / 25);
+          const add = Math.max(0, Math.min(siphon, tickSiphon));
+          state.flux += add;
+        }
+      }
+
+      if (state.overchargeUntil && state.overchargeUntil <= now) {
+        state.overchargeUntil = 0;
+        addLog("Overcharge faded.");
+        showToast("Overcharge ended.");
+      }
+
+      if (state.energy >= 1000) {
+        state.flux += Math.floor(state.energy / 1000);
+      }
+
+      if (state.energy > 0 && state.energy >= 100 && Math.random() < 0.0015) maybeRandomEvent();
+      addProgression();
+      recomputeDerived();
+      renderHUD();
+      renderForge();
+      renderTech();
+      renderQuests();
+      updateCoreCopy();
+    }
+
+    function maybeRandomEvent() {
+      const events = [
+        {
+          name: "Solar Flare",
+          text: "A flare surges across the reactor. Choose a response.",
+          choices: [
+            { label: "Absorb", effect: () => { state.energy += 120; state.flux += 6; addLog("Solar Flare absorbed. Good energy surge."); } },
+            { label: "Shield", effect: () => { state.flux += 12; addLog("Solar Flare blocked. Flux stabilized."); } },
+            { label: "Redirect", effect: () => { state.xp += 20; state.energy += 50; addLog("Flare redirected into growth."); } }
+          ]
+        },
+        {
+          name: "Lost Cache",
+          text: "You found an abandoned cache of energy cells.",
+          choices: [
+            { label: "Open", effect: () => { state.energy += 200; addLog("Cache opened. Energy recovered."); } },
+            { label: "Study", effect: () => { state.flux += 18; addLog("Cache studied. Flux extracted."); } },
+            { label: "Leave", effect: () => { state.cores += 0; addLog("You left the cache untouched."); } }
+          ]
+        },
+        {
+          name: "System Glitch",
+          text: "The matrix stutters. Decide quickly.",
+          choices: [
+            { label: "Exploit", effect: () => { state.energy += 80; state.xp += 25; addLog("Glitch exploited for profit."); } },
+            { label: "Patch", effect: () => { state.flux += 15; addLog("Glitch patched cleanly."); } },
+            { label: "Ignore", effect: () => { state.energy += 30; addLog("Glitch ignored, minor gains remained."); } }
+          ]
+        }
+      ];
+      const pick = events[Math.floor(Math.random() * events.length)];
+      const chosen = pick.choices[Math.floor(Math.random() * pick.choices.length)];
+      chosen.effect();
+      addLog(`<strong>Event:</strong> ${pick.name} — ${chosen.label}.`);
+      showToast(`${pick.name}: ${chosen.label}`);
+      renderAll();
+    }
+
+    function maybeRollQuestProgress() {
+      const quest = state.quests.find(q => q.id === state.currentQuestId);
+      if (!quest || quest.completed) return;
+      quest.progress = Math.min(quest.goal, quest.progress + 1);
+      if (quest.progress >= quest.goal) {
+        quest.completed = true;
+        addLog(`Quest completed: ${quest.name}. Reward waiting.`);
+        showToast(`Quest complete: ${quest.name}`);
+      }
+    }
+
+    function autoQuestTicker() {
+      const quest = state.quests.find(q => q.id === state.currentQuestId);
+      if (!quest) return;
+      if (quest.completed) return;
+      const amount = Math.max(1, Math.floor((state.autoPerSec + state.totalTap) / 10));
+      quest.progress = Math.min(quest.goal, quest.progress + amount);
+      if (quest.progress >= quest.goal) {
+        quest.completed = true;
+        addLog(`Quest completed: ${quest.name}.`);
+        showToast(`Quest ready: ${quest.name}`);
+      }
+      renderQuests();
+    }
+
+    function claimQuestReward() {
+      const quest = state.quests.find(q => q.id === state.currentQuestId);
+      if (!quest) return showToast("No quest loaded.");
+      if (!quest.completed) return showToast("Quest not done yet.");
+      state.energy += quest.reward.energy;
+      state.flux += quest.reward.flux;
+      state.xp += quest.reward.xp;
+      addLog(`Claimed: ${quest.name}.`);
+      showToast(`Claimed ${quest.name}`);
+      quest.claimed = true;
+      generateQuestIfNeeded(true);
+      addProgression();
+      renderAll();
+    }
+
+    function prestigeReset() {
+      const gain = computePrestigeGain();
+      if (gain < 1) return showToast("Need at least 1000 energy to gain a Core.");
+      if (!confirm(`Reset everything to gain ${gain} Core${gain > 1 ? "s" : ""}?`)) return;
+      state.cores += gain;
+      state.energy = 0;
+      state.flux = 0;
+      state.level = 1;
+      state.xp = 0;
+      state.totalTap = 1;
+      state.tapMult = 1;
+      state.globalMult = 1;
+      state.autoPerSec = 0;
+      state.overchargeUntil = 0;
+      state.forge.forEach(f => f.count = 0);
+      state.tech.forEach(t => {
+        if (t.id !== "prestige") t.unlocked = false;
+      });
+      state.quests = [];
+      state.currentQuestId = null;
+      addLog(`Prestige complete. Gained ${gain} Core${gain > 1 ? "s" : ""}.`);
+      showToast(`+${gain} Core${gain > 1 ? "s" : ""}`);
+      hydrateQuestPool();
+      generateQuestIfNeeded(true);
+      rebuildLists();
+      saveGame(true);
+      renderAll();
+    }
+
+    function computePrestigeGain() {
+      return Math.floor(state.energy / 1000);
+    }
+
+    function tapCostMultiplier(item) {
+      return Math.floor(item.baseCost * Math.pow(item.costMult, item.count));
+    }
+
+    function buyForge(id) {
+      const item = state.forge.find(x => x.id === id);
+      const cost = tapCostMultiplier(item);
+      if (state.energy < cost) return showToast(`Need ${fmt(cost)} energy.`);
+      state.energy -= cost;
+      item.count += 1;
+      state.flux += Math.ceil(item.gain / 2);
+      addLog(`Built ${item.name} #${item.count}.`);
+      showToast(`${item.name} purchased.`);
+      playTone(330 + item.count * 8, 0.04, "sine");
+      renderAll();
+    }
+
+    function buyTech(id) {
+      const tech = state.tech.find(x => x.id === id);
+      if (!tech || tech.unlocked) return;
+      if (id === "prestige") {
+        tech.unlocked = state.cores > 0;
+        return;
+      }
+      if (state.flux < tech.baseCost) return showToast(`Need ${fmt(tech.baseCost)} flux.`);
+      state.flux -= tech.baseCost;
+      tech.unlocked = true;
+      addLog(`Research complete: ${tech.name}.`);
+      showToast(`${tech.name} unlocked.`);
+      playTone(610, 0.05, "triangle");
+      renderAll();
+    }
+
+    function hydrateQuestPool() {
+      if (state.quests.length) return;
+      state.quests = generateQuests(3);
+      state.currentQuestId = state.quests[0].id;
+    }
+
+    function generateQuests(count) {
+      const pool = [
+        ["Power Surge", "Reach a burst of stored power.", 200, { energy: 120, flux: 10, xp: 18 }],
+        ["Tap Chain", "Tap the core to keep the combo alive.", 60, { energy: 180, flux: 8, xp: 25 }],
+        ["Forge Builder", "Buy engine units to automate growth.", 8, { energy: 240, flux: 14, xp: 32 }],
+        ["Flux Harvest", "Transform energy into refinement.", 30, { energy: 220, flux: 20, xp: 30 }],
+        ["Ascend Trial", "Prepare for prestige or gain more power.", 1, { energy: 350, flux: 24, xp: 40 }]
+      ];
+      const arr = [];
+      for (let i = 0; i < count; i++) {
+        const [name, desc, goal, reward] = pool[(Math.random() * pool.length) | 0];
+        arr.push({
+          id: `q_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 7)}`,
+          name,
+          desc,
+          goal,
+          progress: 0,
+          completed: false,
+          claimed: false,
+          reward: { ...reward }
+        });
+      }
+      return arr;
+    }
+
+    function generateQuestIfNeeded(force = false) {
+      if (force || !state.quests.length || state.quests.every(q => q.claimed)) {
+        state.quests = generateQuests(3);
+        state.currentQuestId = state.quests[0].id;
+        state.lastQuestRefresh = Date.now();
+      }
+    }
+
+    function rebuildLists() {
+      ui.forgeList.innerHTML = "";
+      ui.techList.innerHTML = "";
+      ui.questList.innerHTML = "";
+      ui.logList.innerHTML = "";
+
+      state.forge.forEach(item => {
+        const cost = tapCostMultiplier(item);
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = `
+          <div>
+            <div class="title">${item.name} <span style="color:var(--muted); font-weight:700;">x${item.count}</span></div>
+            <div class="desc">${item.desc}</div>
+            <div class="meta">+${fmt(item.gain)} energy/sec each</div>
+          </div>
+          <div class="right">
+            <div class="micro">Cost: ${fmt(cost)} energy</div>
+            <button class="action primary" data-buy-forge="${item.id}">Buy</button>
+          </div>`;
+        ui.forgeList.appendChild(el);
+      });
+
+      state.tech.forEach(tech => {
+        const el = document.createElement("div");
+        el.className = "item";
+        const costInfo = tech.id === "prestige" ? `${state.cores > 0 ? "Unlocked after prestige" : "Requires prestige"}` : `${fmt(tech.baseCost)} flux`;
+        el.innerHTML = `
+          <div>
+            <div class="title">${tech.name} ${tech.unlocked ? '<span style="color:var(--good); font-weight:800;">Unlocked</span>' : ''}</div>
+            <div class="desc">${tech.desc}</div>
+            <div class="meta">${costInfo}</div>
+          </div>
+          <div class="right">
+            <button class="action ${tech.unlocked ? '' : 'warn'}" data-buy-tech="${tech.id}" ${tech.unlocked || (tech.id !== 'prestige' && state.flux < tech.baseCost) ? 'disabled' : ''}>${tech.unlocked ? 'Owned' : (tech.id === 'prestige' ? 'Locked' : 'Research')}</button>
+          </div>`;
+        ui.techList.appendChild(el);
+      });
+
+      state.quests.forEach(q => {
+        const progress = Math.min(100, Math.floor((q.progress / q.goal) * 100));
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = `
+          <div>
+            <div class="title">${q.name} ${q.id === state.currentQuestId ? '<span style="color:var(--accent); font-weight:800;">Active</span>' : ''}</div>
+            <div class="desc">${q.desc}</div>
+            <div class="meta">Progress ${q.progress}/${q.goal} • Reward ${fmt(q.reward.energy)} energy, ${fmt(q.reward.flux)} flux, ${fmt(q.reward.xp)} XP</div>
+            <div style="height:10px"></div>
+            <div class="bar"><span style="width:${progress}%"></span></div>
+          </div>
+          <div class="right">
+            <button class="action ${q.completed ? 'good' : 'secondary'}" data-activate-quest="${q.id}">${q.completed ? 'Claim Ready' : 'Track'}</button>
+          </div>`;
+        ui.questList.appendChild(el);
+      });
+
+      state.log.slice().reverse().forEach(entry => {
+        const el = document.createElement("div");
+        el.className = "log-entry";
+        el.innerHTML = entry;
+        ui.logList.appendChild(el);
+      });
+
+      ui.forgeList.querySelectorAll("[data-buy-forge]").forEach(btn => {
+        btn.addEventListener("click", () => buyForge(btn.dataset.buyForge));
+      });
+      ui.techList.querySelectorAll("[data-buy-tech]").forEach(btn => {
+        btn.addEventListener("click", () => buyTech(btn.dataset.buyTech));
+      });
+      ui.questList.querySelectorAll("[data-activate-quest]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          state.currentQuestId = btn.dataset.activateQuest;
+          addLog(`Quest set active.`);
+          showToast("Quest tracked.");
+          renderAll();
+        });
+      });
+    }
+
+    function renderHUD() {
+      ui.energyTxt.textContent = fmt(state.energy);
+      ui.fluxTxt.textContent = fmt(state.flux);
+      ui.levelTxt.textContent = state.level;
+      ui.coresTxt.textContent = fmt(state.cores);
+      ui.energyPerSecTxt.textContent = `+${fmt(state.autoPerSec * (state.overchargeUntil > Date.now() ? 1.35 : 1))} / sec`;
+      ui.xpTxt.textContent = `${fmt(state.xp)} / ${fmt(state.level * 20)} XP`;
+      ui.progressMeta.textContent = `Level ${state.level} • ${fmt(state.xp)} / ${fmt(state.level * 20)} XP`;
+      ui.nextBonusTxt.textContent = `x${(1 + state.cores * 0.15).toFixed(2)}`;
+      ui.autoMeta.textContent = `${fmt(state.autoPerSec)} energy/sec`;
+      ui.unitsTxt.textContent = `${state.forge.reduce((sum, f) => sum + f.count, 0)}`;
+      ui.prestigeMeta.textContent = `Need ${fmt(1000 - (state.energy % 1000 || 0))} more energy for next Core`;
+      ui.prestigeTxt.textContent = `${fmt(state.cores)} permanent Cores`;
+      ui.footerTxt.textContent = `Tap • Upgrade • Automate • Prestige • Repeat`;
+      const quest = state.quests.find(q => q.id === state.currentQuestId);
+      ui.coreBig.textContent = quest?.completed ? "Quest Ready" : state.overchargeUntil > Date.now() ? "Overcharge Active" : "Tap the Core";
+      ui.coreSmall.textContent = quest?.completed
+        ? `A quest is ready to claim. Switch to Quests or tap Claim Reward.`
+        : state.overchargeUntil > Date.now()
+          ? `Overcharge is amplifying your growth loop.`
+          : `Generate energy, trigger spark bursts, and feed your growing machine.`;
+      const prestigeGain = computePrestigeGain();
+      ui.prestigeBtn.textContent = prestigeGain > 0 ? `Prestige Reset (+${prestigeGain})` : `Prestige Reset`;
+      ui.prestigeQuickBtn.textContent = prestigeGain > 0 ? `Reset for +${prestigeGain} Core` : `Reset for Core`;
+      ui.claimQuestBtn.disabled = !(quest && quest.completed);
+      ui.claimQuestBtn.textContent = quest && quest.completed ? `Claim ${quest.name}` : `Claim Quest Reward`;
+      ui.coreMicro.textContent = `Current tap power: ${fmt(state.totalTap * state.tapMult * state.globalMult)}. Overcharge adds a temporary 50% gain boost.`;
+    }
+
+    function renderForge() {
+      // no-op here because rebuildLists handles it, but kept for clarity
+    }
+
+    function renderTech() {
+      // no-op here because rebuildLists handles it, but kept for clarity
+    }
+
+    function renderQuests() {
+      // update quest progress live without full rebuild if possible
+      rebuildLists();
+    }
+
+    function updateCoreCopy() {
+      const isOver = state.overchargeUntil > Date.now();
+      ui.coreOrb.style.borderColor = isOver ? "rgba(117, 232, 160, 0.28)" : "rgba(141, 215, 255, 0.18)";
+    }
+
+    function renderAll() {
+      renderHUD();
+      rebuildLists();
+      updateCoreCopy();
+      saveGame(false);
+    }
+    function addLog(text) {
+      state.log.push(`[${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}] ${text}`);
+      state.log = state.log.slice(-60);
+    }
+    function showToast(text) {
+      ui.toast.textContent = text;
+      ui.toast.classList.add("show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => ui.toast.classList.remove("show"), 1700);
+    }
+    function fmt(n) {
+      const num = Number(n) || 0;
+      if (Math.abs(num) >= 1e12) return (num / 1e12).toFixed(2).replace(/\.00$/, '') + 'T';
+      if (Math.abs(num) >= 1e9) return (num / 1e9).toFixed(2).replace(/\.00$/, '') + 'B';
+      if (Math.abs(num) >= 1e6) return (num / 1e6).toFixed(2).replace(/\.00$/, '') + 'M';
+      if (Math.abs(num) >= 1e3) return (num / 1e3).toFixed(2).replace(/\.00$/, '') + 'K';
+      if (Math.abs(num) % 1 !== 0) return num.toFixed(1).replace(/\.0$/, '');
+      return String(Math.floor(num));
+    }
+    function saveGame(silent) {
+      state.lastSave = Date.now();
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      if (!silent) {
+      }
+    }
+    function loadGame() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+    function exportSave() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `astra-forge-save-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Save exported.");
+    }
+    function importSave(ev) {
+      const file = ev.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          state = { ...structuredClone(defaultState), ...data };
+          normalizeState();
+          saveGame(true);
+          rebuildLists();
+          renderAll();
+          showToast("Save imported.");
+          addLog("Imported save file.");
+        } catch {
+          showToast("Invalid save file.");
+        }
+      };
+      reader.readAsText(file);
+      ev.target.value = "";
+    }
+    function wipeSave() {
+      if (!confirm("Delete your save and start over?")) return;
+      localStorage.removeItem(SAVE_KEY);
+      state = structuredClone(defaultState);
+      hydrateQuestPool();
+      normalizeState();
+      rebuildLists();
+      renderAll();
+      showToast("Save wiped.");
+      addLog("Save wiped clean.");
+    }
+    function maybeUnlockFlux() {
+      if (state.energy >= 200 && !state.tech.find(t => t.id === 'flux')?.unlocked) {
+      }
+    }
+    function computeOfflineGain(seconds) {
+      const capped = Math.min(seconds, 8 * 60 * 60);
+      return capped * state.autoPerSec * 0.6;
+    }
+    function applyOfflineProgress() {
+      const now = Date.now();
+      const elapsed = Math.max(0, (now - (state.lastSave || now)) / 1000);
+      const gain = computeOfflineGain(elapsed);
+      if (gain > 0) {
+        state.energy += gain;
+        state.xp += Math.floor(gain / 8);
+        addProgression();
+        state.lastSave = now;
+      }
+      return gain;
+    }
+    function burstSpark(event) {
+      const orb = ui.coreOrb.getBoundingClientRect();
+      const x = event?.clientX ?? orb.left + orb.width / 2;
+      const y = event?.clientY ?? orb.top + orb.height / 2;
+      for (let i = 0; i < 6; i++) {
+        const s = document.createElement("div");
+        s.className = "spark";
+        s.style.left = `${x}px`;
+        s.style.top = `${y}px`;
+        s.style.setProperty("--dx", `${(Math.random() * 200 - 100).toFixed(0)}px`);
+        s.style.setProperty("--dy", `${(Math.random() * 200 - 100).toFixed(0)}px`);
+        document.body.appendChild(s);
+        setTimeout(() => s.remove(), 720);
+      }
+    }
+    function playTone(freq, duration = 0.05, type = "sine") {
+      if (!soundEnabled) return;
+      try {
+        audioCtx ||= new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = type;
+        o.frequency.value = freq;
+        g.gain.value = 0.01;
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start();
+        g.gain.exponentialRampToValueAtTime(0.06, audioCtx.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        o.stop(audioCtx.currentTime + duration + 0.02);
+      } catch {
+      }
+    }
+    function computeOfflineHint() {
+      const elapsed = Math.max(0, (Date.now() - state.lastSave) / 1000);
+      const gain = computeOfflineGain(elapsed);
+      return gain > 0 ? `Offline gain available: +${fmt(gain)} energy.` : `No offline gain yet.`;
+    }
+    window.AstraForge = { state, saveGame, load: () => location.reload() };
+  </script>
+</body>
+</html>
