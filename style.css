@@ -3,10 +3,8 @@
   --text: #0b1020;
   --card: rgba(255,255,255,0.7);
   --border: rgba(255,255,255,0.5);
-
   --btn-primary-bg: #0b1020;
   --btn-primary-text: #ffffff;
-
   --btn-secondary-bg: rgba(0,0,0,0.05);
 }
 .dark {
@@ -14,8 +12,10 @@
   --text: #f9fafb;
   --card: rgba(20,20,30,0.6);
   --border: rgba(255,255,255,0.08);
+
   --btn-primary-bg: #f9fafb;
   --btn-primary-text: #0b1020;
+
   --btn-secondary-bg: rgba(255,255,255,0.08);
 }
 * {
@@ -27,12 +27,15 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  transition: 0.4s ease;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 .page {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding: 40px 16px;
+  gap: 30px;
+  padding: 60px 20px;
 }
 .card {
   width: 100%;
@@ -58,10 +61,12 @@ body {
   font-weight: 600;
   background: rgba(255,255,255,0.6);
   backdrop-filter: blur(20px);
-
   color: var(--text);
   cursor: pointer;
   transition: 0.25s ease;
+}
+.theme-toggle:hover {
+  transform: translateY(-1px);
 }
 .dark .theme-toggle {
   background: rgba(255,255,255,0.08);
@@ -81,12 +86,14 @@ h1 {
 .subtitle {
   opacity: 0.75;
   line-height: 1.6;
+  max-width: 52ch;
 }
 .meta {
   margin-top: 16px;
   opacity: 0.6;
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 .actions {
   margin-top: 24px;
@@ -100,7 +107,11 @@ h1 {
   text-decoration: none;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: all 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover {
+  transform: translateY(-2px);
 }
 .primary {
   background: var(--btn-primary-bg);
@@ -110,8 +121,15 @@ h1 {
   background: var(--btn-secondary-bg);
   color: var(--text);
 }
-.btn:hover {
-  transform: translateY(-2px);
+.project {
+  margin-top: 25px;
+}
+.project h3 {
+  margin: 10px 0 5px;
+}
+.project p {
+  opacity: 0.7;
+  margin-bottom: 25px;
 }
 @keyframes fade {
   from {
@@ -127,8 +145,12 @@ h1 {
   .actions {
     flex-direction: column;
   }
-.btn {
+
+  .btn {
     width: 100%;
     text-align: center;
+  }
+  .card {
+    padding: 25px;
   }
 }
